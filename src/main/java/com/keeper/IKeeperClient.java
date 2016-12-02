@@ -29,11 +29,15 @@ public interface IKeeperClient {
 	
 	String create(String path, byte[] bytes,CreateMode createMode);
 	
+	String createWtihParent(String path);
+	
 	byte[] read(String path);
 	
 	void update(String path,byte[] bytes);
 	
-	void delete(String path);
+	boolean delete(String path);
+	
+	boolean deleteRecurse(String path);
 	
 	List<String> getChildren(String parent);
 	
