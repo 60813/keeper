@@ -8,11 +8,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException.NoNodeException;
-import org.apache.zookeeper.KeeperException.NodeExistsException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.keeper.exception.KeeperException;
 import com.keeper.listener.KeeperChildListener;
@@ -25,8 +22,6 @@ import com.keeper.listener.KeeperStateListener;
  * @version 0.0.1
  */
 public class KeeperClient implements IKeeperClient {
-
-	private Logger logger = LoggerFactory.getLogger(KeeperClient.class);
 
 	private ZooKeeper zk;
 
