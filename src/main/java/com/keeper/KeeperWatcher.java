@@ -61,6 +61,7 @@ public class KeeperWatcher implements Watcher{
 			}
 			tempSet.add(keeperNodeListener);
 		}
+		installNodeWatcher(path);
 		return tempSet;
 	}
 	
@@ -74,6 +75,7 @@ public class KeeperWatcher implements Watcher{
 			}
 		}
 		tempSet.add(keeperChildListener);
+		installChildrenWatcher(path);
 		return tempSet;
 	}
 	
@@ -93,7 +95,7 @@ public class KeeperWatcher implements Watcher{
 		List<String> children = client.getChildren(path);
 		for (KeeperChildListener listener : listeners){
 			if (!exist){
-				listener.onDelete(path);
+				listener.onParentDelete(path);
 			}else {
 				listener.onChild(path, children);
 			}
@@ -106,6 +108,17 @@ public class KeeperWatcher implements Watcher{
 			fireNodeListener(path);
 		}
 	}
+	
+	public void installNodeWatcher(String path){
+		client.exist(path,true);
+	}
+	
+	public void installChildrenWatcher(String path){
+		client.exist(path,true);
+		client.getChildren(path);
+	}
+	
+	
 	public void fireNodeListener(String path){
 		Set<KeeperNodeListener> listeners = keeperNodeListeners.get(path);
 		if (listeners == null || listeners.isEmpty()){
@@ -118,7 +131,7 @@ public class KeeperWatcher implements Watcher{
 				listener.onDelete(path);
 			}else {
 				try{
-					byte[] bytes = client.read(path);
+					byte[] bytes = client.read(path,true);
 					listener.onData(path, bytes);
 				}catch(Exception e){
 					if (e instanceof KeeperException.NoNodeException){
@@ -135,7 +148,6 @@ public class KeeperWatcher implements Watcher{
 
 	public void process(WatchedEvent event) {
 		LOGGER.debug("event" + event);
-		
 		if (event.getPath()!=null && !"".equals(event.getPath().trim()) ){
 			processNodeEvent(event);
 		}else {

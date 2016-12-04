@@ -10,7 +10,5 @@ import java.util.List;
 public interface KeeperChildListener {
 	public void onChild(String parent,List<String> subs) ;
 	
-	public void onCreate(String path,byte[] bytes);
-	
-	public void onDelete(String path);
+	public void onParentDelete(String path);
 }

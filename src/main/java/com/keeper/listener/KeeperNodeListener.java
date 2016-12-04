@@ -9,7 +9,5 @@ package com.keeper.listener;
 public interface KeeperNodeListener {
 	public void onData(String path,byte[] bytes);
 	
-	public void onCreate(String path,byte[] bytes);
-	
 	public void onDelete(String path);
 }

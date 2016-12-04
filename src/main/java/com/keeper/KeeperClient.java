@@ -92,11 +92,17 @@ public class KeeperClient implements IKeeperClient {
 	}
 
 	public synchronized void reconnect() {
-		close();
+		closeConnection();
 		connect();
 	}
+	
+	
+	public void closeClient(){
+		//TODO:close pool and release resource
+		closeConnection();
+	}
 
-	private synchronized void close() {
+	public synchronized void closeConnection() {
 		if (zk != null) {
 			try {
 				zk.close();
@@ -139,6 +145,14 @@ public class KeeperClient implements IKeeperClient {
 			throw new KeeperException(e);
 		}
 	}
+	
+	protected boolean exist(String path,boolean watch){
+		try {
+			return zk.exists(path, watch) != null;
+		} catch (Exception e) {
+			throw new KeeperException(e);
+		}
+	}
 
 	public String create(String path, byte[] bytes) {
 		return create(path, bytes, CreateMode.PERSISTENT);
@@ -172,7 +186,7 @@ public class KeeperClient implements IKeeperClient {
 		return read(path, false);
 	}
 
-	private byte[] read(String path, boolean watch) {
+	public byte[] read(String path, boolean watch) {
 		try {
 			return zk.getData(path, watch, null);
 		} catch (Exception e) {
