@@ -9,6 +9,7 @@ import java.util.concurrent.locks.Condition;
  *@version 0.0.1
  */
 public interface KeeperLock {
+	static final String LOCK_ROOT= "/lock_root";
 	  /**
      * Acquires the Keeperlock.
      *

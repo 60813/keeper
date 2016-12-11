@@ -18,13 +18,12 @@ import com.keeper.client.exception.KeeperException;
 import com.keeper.client.listener.KeeperChildListener;
 
 /**
+ * Thread safe
  *@author huangdou
  *@at 2016年12月5日下午3:02:52
  *@version 0.0.1
  */
 public class KeeperMutexLock implements KeeperLock {
-	private static final String LOCK_ROOT= "/lock_root";
-	
 	private String name ;
 	
 	private String lockPath ;
@@ -34,7 +33,7 @@ public class KeeperMutexLock implements KeeperLock {
 	private ThreadLocal<String> currentNodePath = new ThreadLocal<String>();
 	private Map<String,Semaphore> waitThreadMap = new ConcurrentHashMap<String,Semaphore>();
 	
-	private void init (){
+	private synchronized void init (){
 		if (name == null || "".equals(name.trim())||name.contains("/")){
 			throw new IllegalArgumentException(String.format("path can not be %s", name));
 		}
