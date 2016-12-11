@@ -1,4 +1,4 @@
-package com.keeper.keeper;
+package com.keeper.client;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.keeper.KeeperClient;
+import com.keeper.client.KeeperClient;
 
 /**
  *@author huangdou
@@ -27,13 +27,13 @@ public class TestClientCRUD {
 	@BeforeClass
 	public static void createClient(){
 		System.out.println("before");
-		client = new KeeperClient("127.0.0.1:2183");
+		client = new KeeperClient("127.0.0.1:2181");
 	}
 	
 	@AfterClass
 	public static void closeClient(){
 		if (client != null){
-			client.closeConnection();
+			client.closeClient();
 			client = null;
 		}
 	}

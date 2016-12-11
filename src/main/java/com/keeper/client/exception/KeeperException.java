@@ -1,4 +1,4 @@
-package com.keeper.exception;
+package com.keeper.client.exception;
 /**
  *@author huangdou
  *@at 2016年11月28日下午3:18:34

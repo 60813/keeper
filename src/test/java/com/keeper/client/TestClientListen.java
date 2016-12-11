@@ -1,4 +1,4 @@
-package com.keeper.keeper;
+package com.keeper.client;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -10,9 +10,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.keeper.KeeperClient;
-import com.keeper.listener.KeeperChildListener;
-import com.keeper.listener.KeeperNodeListener;
+import com.keeper.client.KeeperClient;
+import com.keeper.client.listener.KeeperChildListener;
+import com.keeper.client.listener.KeeperNodeListener;
 
 /**
  *@author huangdou
@@ -45,7 +45,7 @@ public class TestClientListen {
 	@After
 	public void after(){
 		if (client != null){
-			client.closeConnection();
+			client.closeClient();
 			client = null;
 		}
 	}
@@ -78,6 +78,7 @@ public class TestClientListen {
 	
 	@Test
 	public void testChildListen() throws InterruptedException{
+		final AtomicInteger onChildCall = new AtomicInteger();
 		client.listenChild(testPath, new KeeperChildListener() {
 			
 			public void onParentDelete(String path) {
@@ -86,6 +87,7 @@ public class TestClientListen {
 			
 			public void onChild(String parent, List<String> subs) {
 				System.out.println("child added or removed : " + subs);
+				onChildCall.addAndGet(1);
 			}
 		});
 		
@@ -97,6 +99,9 @@ public class TestClientListen {
 		Thread.sleep(1000);
 		client.create(testPath+"/"+"B", testData.getBytes());
 		Thread.sleep(1000);
+		client.delete(testPath+"/"+"B");
+		Thread.sleep(1000);
+		
 		client.deleteRecurse(testPath);
 		Thread.sleep(1000);
 	}

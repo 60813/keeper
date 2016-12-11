@@ -1,4 +1,4 @@
-package com.keeper.event;
+package com.keeper.client.event;
 
 
 /**

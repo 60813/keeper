@@ -1,4 +1,4 @@
-package com.keeper.event;
+package com.keeper.client.event;
 /**
  *@author huangdou
  *@at 2016年11月29日下午1:53:11

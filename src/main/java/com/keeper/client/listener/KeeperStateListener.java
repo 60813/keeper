@@ -1,6 +1,6 @@
-package com.keeper.listener;
+package com.keeper.client.listener;
 
-import com.keeper.event.KeeperStateEvent;
+import com.keeper.client.event.KeeperStateEvent;
 
 /**
  *@author huangdou

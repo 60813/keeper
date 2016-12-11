@@ -1,8 +1,8 @@
-package com.keeper;
+package com.keeper.client;
 
-import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -11,10 +11,10 @@ import org.apache.zookeeper.KeeperException.NoNodeException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 
-import com.keeper.exception.KeeperException;
-import com.keeper.listener.KeeperChildListener;
-import com.keeper.listener.KeeperNodeListener;
-import com.keeper.listener.KeeperStateListener;
+import com.keeper.client.exception.KeeperException;
+import com.keeper.client.listener.KeeperChildListener;
+import com.keeper.client.listener.KeeperNodeListener;
+import com.keeper.client.listener.KeeperStateListener;
 
 /**
  * @author huangdou
@@ -34,9 +34,17 @@ public class KeeperClient implements IKeeperClient {
 	private String connectString;
 
 	private AtomicBoolean connected = new AtomicBoolean();
+	
+	private volatile boolean shutdonwClient = false;
 
 	private int concurrentProcessNum;
-
+	
+	public boolean isShutDown(){
+		return shutdonwClient;
+	}
+	public void setClientIhutDown(boolean down){
+		shutdonwClient = down;
+	}
 	public int getConcurrentProcessNum() {
 		return concurrentProcessNum;
 	}
@@ -55,12 +63,6 @@ public class KeeperClient implements IKeeperClient {
 
 	public void disconnected() {
 		connected.set(false);
-	}
-
-	private Semaphore connectionLock = new Semaphore(0);
-
-	public void releaseConnectionLock() {
-		connectionLock.release();
 	}
 
 	public KeeperClient(String connectString, int sessionTimeout,
@@ -92,36 +94,55 @@ public class KeeperClient implements IKeeperClient {
 	}
 
 	public synchronized void reconnect() {
-		closeConnection();
-		connect();
+		watcher.getEventLock().lock();
+		try{
+			closeConnection();
+			connect();
+		}finally{
+			watcher.getEventLock().unlock();
+		}
+		
 	}
 	
 	
 	public void closeClient(){
-		//TODO:close pool and release resource
-		closeConnection();
+		watcher.getEventLock().lock();
+		try{
+			closeConnection();
+			watcher.getPool().shutdownPool();
+			setClientIhutDown(true);
+		}finally{
+			watcher.getEventLock().unlock();
+		}
+		
 	}
 
 	public synchronized void closeConnection() {
-		if (zk != null) {
-			try {
-				zk.close();
-				zk = null;
-			} catch (InterruptedException e) {
-				throw new KeeperException(e);
+		watcher.getEventLock().lock();
+		try{
+			if (zk != null) {
+				try {
+					zk.close();
+					zk = null;
+				} catch (InterruptedException e) {
+					throw new KeeperException(e);
+				}
 			}
+			this.disconnected();
+		}finally{
+			watcher.getEventLock().unlock();
 		}
-		this.disconnected();
 	}
 
 	private synchronized void connect() {
 		try {
+			watcher.getEventLock().lock();
 			if (connected.get()) {
 				throw new KeeperException("Keeper Has been connected.");
 			}
 			zk = new ZooKeeper(connectString, sessionTimeout, watcher);
-			if (!connectionLock.tryAcquire(connectTimeout,
-					TimeUnit.MILLISECONDS)) {
+			if (!watcher.getCondition().await(connectTimeout,TimeUnit.MILLISECONDS)) {
+//			if (!connectionLock.tryAcquire(connectTimeout,TimeUnit.MILLISECONDS)) {	
 				if (zk != null) {
 					zk.close();
 				}
@@ -131,10 +152,10 @@ public class KeeperClient implements IKeeperClient {
 								connectString, connectTimeout));
 			}
 			connected.set(true);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			throw new KeeperException(e);
-		} catch (InterruptedException e) {
-			throw new KeeperException(e);
+		}finally{
+			watcher.getEventLock().unlock();
 		}
 	}
 
@@ -180,6 +201,11 @@ public class KeeperClient implements IKeeperClient {
 			throw new KeeperException(e);
 		}
 		return path ;
+	}
+	
+	@Override
+	public String createSequential(String path, byte[] bytes) {
+		return create(path, bytes, CreateMode.PERSISTENT_SEQUENTIAL);
 	}
 
 	public byte[] read(String path) {
@@ -231,6 +257,23 @@ public class KeeperClient implements IKeeperClient {
 		} catch (Exception e) {
 			throw new KeeperException(e);
 		}
+	}
+	
+	public List<String> getSortedChildren(String parent) {
+		return getSortedChildren(parent, new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
+				return Integer.parseInt(o1)-Integer.parseInt(o2);
+			}
+		});
+	}
+	
+	public List<String> getSortedChildren(String parent,Comparator<String> comparator){
+		List<String> children  = getChildren(parent);
+		if (children != null && children.size() > 1){
+			Collections.sort(children, comparator);
+		}
+		return children ;
 	}
 
 	public void listenNode(String path, KeeperNodeListener keeperNodeListener) {

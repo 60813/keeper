@@ -1,10 +1,14 @@
-package com.keeper;
+package com.keeper.client;
 
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
@@ -12,10 +16,10 @@ import org.apache.zookeeper.Watcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.keeper.event.EventConsumerPool;
-import com.keeper.listener.KeeperChildListener;
-import com.keeper.listener.KeeperNodeListener;
-import com.keeper.listener.KeeperStateListener;
+import com.keeper.client.event.EventConsumerPool;
+import com.keeper.client.listener.KeeperChildListener;
+import com.keeper.client.listener.KeeperNodeListener;
+import com.keeper.client.listener.KeeperStateListener;
 /**
  *@author huangdou
  *@at 2016年11月28日下午3:25:55
@@ -31,6 +35,18 @@ public class KeeperWatcher implements Watcher{
 	private ConcurrentHashMap<String,Set<KeeperNodeListener>> keeperNodeListeners = new ConcurrentHashMap<String,Set<KeeperNodeListener>>();
 	private ConcurrentHashMap<String,Set<KeeperChildListener>> keeperChildListeners = new ConcurrentHashMap<String,Set<KeeperChildListener>>();
 
+	private Lock eventLock = new ReentrantLock();
+	private Condition condition = eventLock.newCondition();
+	public Lock getEventLock(){
+		return eventLock;
+	}
+	public Condition getCondition(){
+		return condition;
+	}
+	
+	public EventConsumerPool getPool(){
+		return pool ;
+	}
 	public Set<KeeperChildListener> getChildListeners(String path){
 		return keeperChildListeners.get(path);
 	}
@@ -148,22 +164,30 @@ public class KeeperWatcher implements Watcher{
 
 	public void process(WatchedEvent event) {
 		LOGGER.debug("event" + event);
-		if (event.getPath()!=null && !"".equals(event.getPath().trim()) ){
-			processNodeEvent(event);
-		}else {
-			switch (event.getState()) {
-			case SyncConnected:
-				client.connected();
-				client.releaseConnectionLock();
-				break;
-			case Expired :
-				client.reconnect();
-				fireAllNodeListener();
-				fireAllChildListener();
-				break;
-			default:
-				break;
+		getEventLock().lock();
+		try{
+			if (client.isShutDown()){
+				return ;
 			}
+			if (event.getPath()!=null && !"".equals(event.getPath().trim()) ){
+				processNodeEvent(event);
+			}else {
+				switch (event.getState()) {
+				case SyncConnected:
+					client.connected();
+					getCondition().signalAll();
+					break;
+				case Expired :
+					client.reconnect();
+					fireAllNodeListener();
+					fireAllChildListener();
+					break;
+				default:
+					break;
+				}
+			}
+		}finally{
+			getEventLock().unlock();
 		}
 	}
 	

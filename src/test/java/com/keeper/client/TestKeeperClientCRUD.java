@@ -1,4 +1,4 @@
-package com.keeper.keeper;
+package com.keeper.client;
 
 
 
@@ -9,8 +9,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.keeper.KeeperClient;
-import com.keeper.exception.KeeperException;
+import com.keeper.client.KeeperClient;
+import com.keeper.client.exception.KeeperException;
 
 /**
  *@author huangdou

@@ -1,4 +1,4 @@
-package com.keeper.keeper;
+package com.keeper.client;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

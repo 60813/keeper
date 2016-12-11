@@ -1,12 +1,14 @@
-package com.keeper;
+package com.keeper.client;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.zookeeper.CreateMode;
 
-import com.keeper.listener.KeeperChildListener;
-import com.keeper.listener.KeeperNodeListener;
-import com.keeper.listener.KeeperStateListener;
+import com.keeper.client.listener.KeeperChildListener;
+import com.keeper.client.listener.KeeperNodeListener;
+import com.keeper.client.listener.KeeperStateListener;
 
 /**
  *@author huangdou
@@ -31,6 +33,8 @@ public interface IKeeperClient {
 	
 	String createWtihParent(String path);
 	
+	String createSequential(String path, byte[] bytes);
+	
 	byte[] read(String path);
 	
 	void update(String path,byte[] bytes);
@@ -41,9 +45,15 @@ public interface IKeeperClient {
 	
 	List<String> getChildren(String parent);
 	
+	List<String> getSortedChildren(String parent) ;
+	
+	List<String> getSortedChildren(String parent,Comparator<String> comparator);
+	
 	void listenNode(String path,KeeperNodeListener keeperNodeListener);
 	
 	void listenChild(String path,KeeperChildListener keeperChildListener);
 	
 	void listenState(KeeperStateListener keeperStateListener);
+	
+	
 }

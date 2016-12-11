@@ -1,17 +1,19 @@
-package com.keeper.event;
+package com.keeper.client.event;
 
 import static org.apache.zookeeper.Watcher.Event.EventType.NodeChildrenChanged;
 import static org.apache.zookeeper.Watcher.Event.EventType.NodeCreated;
-import static org.apache.zookeeper.Watcher.Event.EventType.NodeDeleted;
 import static org.apache.zookeeper.Watcher.Event.EventType.NodeDataChanged;
+import static org.apache.zookeeper.Watcher.Event.EventType.NodeDeleted;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.zookeeper.WatchedEvent;
 
-import com.keeper.KeeperWatcher;
+import com.keeper.client.KeeperWatcher;
 
 /**
  *@author huangdou
@@ -26,6 +28,18 @@ public class EventConsumerPool {
 	public EventConsumerPool(int concurrentEventNum,KeeperWatcher watcher) {
 		this.watcher = watcher;
 		pool = Executors.newFixedThreadPool(concurrentEventNum, EventConsumerFactory.getFactory());
+	}
+	
+	public void shutdownPool(){
+		if (pool != null){
+			pool.shutdown();
+			try {
+				pool.awaitTermination(2, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public void submit(final WatchedEvent event){
