@@ -2,8 +2,8 @@
 基于[zookeeper](http://zookeeper.apache.org)实现的分布式开发客户端
 
 - [KEEPER](#keeper)
-    - [FEATURES](#FEATURES)
-    - [MAVEN-DEPENDENCY](#MAVEN-DEPENDENCY)
+    - [FEATURES](#features)
+    - [MAVEN-DEPENDENCY](#maven-dependency)
     - [USAGE](#USAGE)
     - [DEMO](#DEMO)
     	- [CLIENT-CRUD](#CLIENT-CRUD)
