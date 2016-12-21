@@ -4,12 +4,12 @@
 - [KEEPER](#keeper)
     - [FEATURES](#features)
     - [MAVEN-DEPENDENCY](#maven-dependency)
-    - [USAGE](#USAGE)
-    - [DEMO](#DEMO)
-    	- [CLIENT-CRUD](#CLIENT-CRUD)
-	- [CLIENT-LISTEN](#CLIENT-LISTEN)
-	- [MutexLock](#MutexLock)
-	- [Semaphore](#Semaphore)
+    - [USAGE](#usage)
+    - [DEMO](#demo)
+    	- [CLIENT-CRUD](#client-crud)
+	- [CLIENT-LISTEN](#client-listen)
+	- [MutexLock](#mutexlock)
+	- [Semaphore](#semaphore)
 
 
 ## FEATURES
