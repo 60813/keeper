@@ -1,15 +1,15 @@
 # KEEPER
 基于[zookeeper](http://zookeeper.apache.org)实现的分布式开发客户端
 
-- [KEEPER](#keeper)
-    - [FEATURES](#features)
-    - [MAVEN-DEPENDENCY](#maven-dependency)
-    - [USAGE](#usage)
-    - [DEMO](#demo)
-    	-- [CLIENT-CRUD](#client-crud)
-	-- [CLIENT-LISTEN](#client-listen)
-	-- [MutexLock](#mutexlock)
-	-- [Semaphore](#semaphore)
+* [KEEPER](#keeper)
+	* [FEATURES](#features)
+	* [MAVEN-DEPENDENCY](#maven-dependency)
+	* [USAGE](#usage)
+    	* [DEMO](#demo)
+    		* [CLIENT-CRUD](#client-crud)
+		* [CLIENT-LISTEN](#client-listen)
+		* [MutexLock](#mutexlock)
+		* [Semaphore](#semaphore)
 
 
 ## FEATURES
