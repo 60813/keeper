@@ -1,19 +1,26 @@
-# keeper
+# KEEPER
 基于[zookeeper](http://zookeeper.apache.org)实现的分布式开发客户端
-## features
+
+- [keeper](#keeper)
+    - [features](#features)
+    - [maven dependency](#maven dependency)
+    - [usage](#usage)
+    - [demo](#bytecode-manipulation)
+
+## FEATURES
 * client
 实现zookeeper watch，session过期处理，断线重连
 * expansion
 实现分布式锁(互斥锁)，分布式信号量(samephore),分布式闭锁(CountDownLatch)等
 
-## maven dependency
+## MAVEN-DEPENDENCY
     <dependency>
         <groupId>com.60813</groupId>
 	      <artifactId>keeper</artifactId>
 	      <version>0.0.1-SNAPSHOT</version>
     </dependency>
     
-## usage
+## USAGE
 	//构造
 	KeeperClient client = new KeeperClient("127.0.0.1:2181");
 	
@@ -69,7 +76,7 @@
 ## DEMO
     KeeperClient client = new KeeperClient("127.0.0.1:2181");
 
-### client CRUD
+### CLIENT CRUD
 
 	static String testPath =  "/hworld";
 	static String testData  = "hello world";
@@ -112,7 +119,7 @@
 		}
 	}
 	
-### client LISTEN
+### CLIENT LISTEN
 	static String testPath =  "/hworld";
 	static String testData  = "hello world";
 	@Test
