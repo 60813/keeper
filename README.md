@@ -169,7 +169,71 @@
 		Thread.sleep(1000);
 	}
 
-
+### MutexLock
+	final KeeperLock lock1 = new KeeperMutexLock("testlocka", client);
+	new ReentrantLockThread(lock1,"lock1a").start();
+	new ReentrantLockThread(lock1,"lock1b").start();
+	new ReentrantLockThread(lock1,"lock1c").start();
 	
+	class ReentrantLockThread extends Thread{
+		private KeeperLock lock ;
+		public ReentrantLockThread(KeeperLock lock,String name) {
+			this.lock = lock;
+			this.setName(name);
+		}
+
+		@Override
+		public void run() {
+			try {
+				lock.lock();
+				System.out.println(Thread.currentThread().getName()+"  locked 1 ");
+			} catch (InterruptedException e1) {
+				return ;
+			}
+			try {
+				lock.lock();
+				System.out.println(Thread.currentThread().getName()+"  locked 2 ");
+				lock.unlock();
+				System.out.println(Thread.currentThread().getName()+"  release 1 ");
+				//观察该线程占用锁5秒				
+				Thread.sleep(5000);
+				lock.unlock();
+				System.out.println(Thread.currentThread().getName()+"  release 2 ");
+			} catch (InterruptedException e) {
+			}
+		}
+		
+	}
+### Semaphore
+		//观察给出3个许可，允许3个线程同时执行		
+		KeeperSemaphore semaphore = KeeperSimpleSemaphore.getOrCreate("semaphore2", 3, client);
+		for (int i=1;i<=16;i++){
+			Thread myThread = new MyThread(i+"", semaphore);
+			myThread.start();
+		}
+		
+		class MyThread extends Thread{
+		KeeperSemaphore semaphore ;
+		public MyThread(String name, KeeperSemaphore semaphore) {
+			this.setName(name);
+			this.semaphore = semaphore;
+		}
+		
+		@Override
+		public void run() {
+			try {
+				semaphore.acquire();
+				System.out.println(Thread.currentThread().getName() + " got a release ,availablePermits is " +semaphore.availablePermits());
+				//观察sleep一段时间，在release之前，许可不会被其他线程拿到				
+				Thread.sleep(new Random().nextInt(1000));
+				semaphore.release();
+				System.out.println(Thread.currentThread().getName() + " returnd a release ,availablePermits is " +semaphore.availablePermits());
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	} 
+		
+
 ## Contributor
 * huangdou
