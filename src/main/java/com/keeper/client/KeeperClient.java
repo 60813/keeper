@@ -288,7 +288,8 @@ public class KeeperClient implements IKeeperClient {
 	}
 
 	public void listenState(KeeperStateListener keeperStateListener) {
-		watcher.registKeeperStateListener(keeperStateListener);
+		throw new KeeperException("not supported!");
+//		watcher.registKeeperStateListener(keeperStateListener);
 	}
 
 }

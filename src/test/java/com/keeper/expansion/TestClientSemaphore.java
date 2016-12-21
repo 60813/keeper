@@ -43,16 +43,11 @@ public class TestClientSemaphore {
 	}
 	
 	class MyThread extends Thread{
-
-		String name ;
 		KeeperSemaphore semaphore ;
-		
 		public MyThread(String name, KeeperSemaphore semaphore) {
-			super();
-			this.name = name;
+			this.setName(name);
 			this.semaphore = semaphore;
 		}
-
 		
 		@Override
 		public void run() {
@@ -65,8 +60,6 @@ public class TestClientSemaphore {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			
 		}
 	} 
-
 }
