@@ -9,7 +9,7 @@
     		* [CLIENT-CRUD](#client-crud)
 			* [CLIENT-LISTEN](#client-listen)
 				* [MutexLock](#mutexlock)
-				* [Semaphore](#semaphore)
+					* [Semaphore](#semaphore)
 
 
 ## FEATURES
