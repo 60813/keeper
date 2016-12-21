@@ -50,7 +50,21 @@
 	
 	//监听子节点增删以及本节点增删；传入指定listener,当变化发生时事件回调
 	void listenChild(String path,KeeperChildListener keeperChildListener);
-		
+	
+	//构造分布式锁（互斥可重入），name是锁名称		
+	final KeeperLock lock = new KeeperMutexLock("testlocka", client);
+	//加锁	
+	lock.lock();
+	//解锁
+	lock.unlock();
+	
+	//构造分布式信号量，name是名称，共享信号量的线程使用同一名称，int为最大许可总数，一经创建不可修改	
+	KeeperSemaphore semaphore = KeeperSimpleSemaphore.getOrCreate("semaphore2", 3, client);
+	//请求许可，无可用许可会阻塞线程，当然也可以使用tryAcquire直接返回			
+	semaphore.acquire();
+	//返还许可，若不主动返还，则本许可将一直被该线程占用，直到client离线
+	semaphore.release();
+	
 	
 ## DEMO
     KeeperClient client = new KeeperClient("127.0.0.1:2181");
