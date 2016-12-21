@@ -80,10 +80,12 @@
 ```	
 	
 ## DEMO
+```Java
     KeeperClient client = new KeeperClient("127.0.0.1:2181");
+```
 
 ### CLIENT-CRUD
-
+```Java
 	static String testPath =  "/hworld";
 	static String testData  = "hello world";
     	@Test
@@ -124,8 +126,10 @@
 			client.deleteRecurse(testPath);
 		}
 	}
-	
+```
+
 ### CLIENT-LISTEN
+```Java
 	static String testPath =  "/hworld";
 	static String testData  = "hello world";
 	@Test
@@ -181,8 +185,10 @@
 		client.deleteRecurse(testPath);
 		Thread.sleep(1000);
 	}
+```
 
 ### MutexLock
+```Java
 	final KeeperLock lock1 = new KeeperMutexLock("testlocka", client);
 	new ReentrantLockThread(lock1,"lock1a").start();
 	new ReentrantLockThread(lock1,"lock1b").start();
@@ -217,7 +223,10 @@
 		}
 		
 	}
+```
+
 ### Semaphore
+```Java
 		//观察给出3个许可，允许3个线程同时执行		
 		KeeperSemaphore semaphore = KeeperSimpleSemaphore.getOrCreate("semaphore2", 3, client);
 		for (int i=1;i<=16;i++){
@@ -246,7 +255,7 @@
 			}
 		}
 	} 
-		
+```		
 
 ## Contributor
 * huangdou
