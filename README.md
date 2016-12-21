@@ -6,10 +6,11 @@
 	* [MAVEN-DEPENDENCY](#maven-dependency)
 	* [USAGE](#usage)
     	* [DEMO](#demo)
-    		* [CLIENT-CRUD](#client-crud)
-			* [CLIENT-LISTEN](#client-listen)
-				* [MutexLock](#mutexlock)
-					* [Semaphore](#semaphore)
+    	* [CLIENT-CRUD](#client-crud)
+	* [CLIENT-LISTEN](#client-listen)
+	* [MutexLock](#mutexlock)
+	* [Semaphore](#semaphore)
+			
 
 
 ## FEATURES
