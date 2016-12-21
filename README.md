@@ -5,11 +5,12 @@
 	* [FEATURES](#features)
 	* [MAVEN-DEPENDENCY](#maven-dependency)
 	* [USAGE](#usage)
-    	* [DEMO](#demo)
-    	* [CLIENT-CRUD](#client-crud)
-	* [CLIENT-LISTEN](#client-listen)
-	* [MutexLock](#mutexlock)
-	* [Semaphore](#semaphore)
+	* [DEMO](#demo)
+		* [CLIENT-CRUD](#client-crud)
+		* [CLIENT-LISTEN](#client-listen)
+		* [MutexLock](#mutexlock)
+		* [Semaphore](#semaphore)
+	* [CONTRIBUTOR](#contributor)
 			
 
 
@@ -258,5 +259,5 @@
 	} 
 ```		
 
-## Contributor
+## CONTRIBUTOR
 * huangdou
