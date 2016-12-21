@@ -26,6 +26,7 @@
     </dependency>
     
 ## USAGE
+```Java
 	//构造
 	KeeperClient client = new KeeperClient("127.0.0.1:2181");
 	
@@ -76,7 +77,7 @@
 	semaphore.acquire();
 	//返还许可，若不主动返还，则本许可将一直被该线程占用，直到client离线
 	semaphore.release();
-	
+```	
 	
 ## DEMO
     KeeperClient client = new KeeperClient("127.0.0.1:2181");
