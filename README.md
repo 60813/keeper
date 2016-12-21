@@ -16,8 +16,42 @@
 ## usage
 	//构造
 	KeeperClient client = new KeeperClient("127.0.0.1:2181");
-	//构造
-	closeClient()	
+	
+	//关闭	
+	client.closeClient();
+	
+	//create
+	String create(String path,byte[] bytes);
+	//createMode 指定创建临时节点或者持久节点，或者序列节点
+	String create(String path, byte[] bytes,CreateMode createMode);
+	//create 自动创建父亲节点
+	String createWtihParent(String path);
+	
+	//read
+	byte[] read(String path);
+	
+	//update
+	void update(String path,byte[] bytes);
+	
+	//delete	
+	boolean delete(String path);
+	//delete 含子节点
+	boolean deleteRecurse(String path);
+	
+	//getChildren
+	List<String> getChildren(String parent);
+	//getSortedChildren 用于子节点全部为int名称的默认排序
+	List<String> getSortedChildren(String parent) ;
+	//getSortedChildren 传入指定比较器
+	List<String> getSortedChildren(String parent,Comparator<String> comparator);
+	
+	//监听数据变化，增，删；传入指定listener,当变化发生时事件回调	
+	void listenNode(String path,KeeperNodeListener keeperNodeListener);
+	
+	//监听子节点增删以及本节点增删；传入指定listener,当变化发生时事件回调
+	void listenChild(String path,KeeperChildListener keeperChildListener);
+		
+	
 ## DEMO
     KeeperClient client = new KeeperClient("127.0.0.1:2181");
 
