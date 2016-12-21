@@ -5,14 +5,17 @@
 实现zookeeper watch，session过期处理，断线重连
 * expansion
 实现分布式锁(互斥锁)，分布式信号量(samephore),分布式闭锁(CountDownLatch)等
+
 ## maven dependency
     <dependency>
         <groupId>com.60813</groupId>
 	      <artifactId>keeper</artifactId>
 	      <version>0.0.1-SNAPSHOT</version>
     </dependency>
+    
 ## Contributor
 * huangdou
+
 ## usage
     KeeperClient client = new KeeperClient("127.0.0.1:2181");
 
