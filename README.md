@@ -1,11 +1,16 @@
 # KEEPER
 基于[zookeeper](http://zookeeper.apache.org)实现的分布式开发客户端
 
-- [keeper](#keeper)
-    - [features](#features)
-    - [maven dependency](#maven dependency)
-    - [usage](#usage)
-    - [demo](#bytecode-manipulation)
+- [KEEPER](#KEEPER)
+    - [FEATURES](#FEATURES)
+    - [MAVEN-DEPENDENCY](#MAVEN-DEPENDENCY)
+    - [USAGE](#USAGE)
+    - [DEMO](#DEMO)
+    	- [CLIENT-CRUD](#CLIENT-CRUD)
+	- [CLIENT-LISTEN](#CLIENT-LISTEN)
+	- [MutexLock](#MutexLock)
+	- [Semaphore](#Semaphore)
+
 
 ## FEATURES
 * client
@@ -76,7 +81,7 @@
 ## DEMO
     KeeperClient client = new KeeperClient("127.0.0.1:2181");
 
-### CLIENT CRUD
+### CLIENT-CRUD
 
 	static String testPath =  "/hworld";
 	static String testData  = "hello world";
@@ -119,7 +124,7 @@
 		}
 	}
 	
-### CLIENT LISTEN
+### CLIENT-LISTEN
 	static String testPath =  "/hworld";
 	static String testData  = "hello world";
 	@Test
