@@ -13,9 +13,12 @@
 	      <version>0.0.1-SNAPSHOT</version>
     </dependency>
     
-
-
 ## usage
+	//构造
+	KeeperClient client = new KeeperClient("127.0.0.1:2181");
+	//构造
+	closeClient()	
+## DEMO
     KeeperClient client = new KeeperClient("127.0.0.1:2181");
 
 ### client CRUD
