@@ -19,7 +19,7 @@ public interface KeeperLock {
      *
      * <p>A {@code KeeperLock} is used for the distributed scene
      */
-    void lock();
+    void lock() throws InterruptedException;
 
     /**
      * Acquires the lock only if it is free at the time of invocation.
@@ -87,4 +87,5 @@ public interface KeeperLock {
      * it has not yet implemented
      */
     Condition newCondition();
+    
 }

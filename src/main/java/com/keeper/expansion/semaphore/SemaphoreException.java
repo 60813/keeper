@@ -1,4 +1,4 @@
-package com.keeper.expansion;
+package com.keeper.expansion.semaphore;
 /**
  *@author huangdou
  *@at 2016年12月11日下午8:50:38

@@ -9,6 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException.NodeExistsException;
@@ -30,9 +32,20 @@ public class KeeperMutexLock implements KeeperLock {
 	
 	private KeeperClient client ;
 	
+	private Lock innerLock = new ReentrantLock() ;
+	
+	
 	private ThreadLocal<String> currentNodePath = new ThreadLocal<String>();
+	private ThreadLocal<Integer> lockCount = new ThreadLocal<Integer>();
 	private Map<String,Semaphore> waitThreadMap = new ConcurrentHashMap<String,Semaphore>();
 	
+	private void innerLocked(){
+		innerLock.lock();
+	}
+	
+	private void innerUnlocked(){
+		innerLock.unlock();
+	}
 	private synchronized void init (){
 		if (name == null || "".equals(name.trim())||name.contains("/")){
 			throw new IllegalArgumentException(String.format("path can not be %s", name));
@@ -56,18 +69,33 @@ public class KeeperMutexLock implements KeeperLock {
 		this.client = client ;
 		init ();
 	}
+	
+	public static KeeperLock getLock(String name,KeeperClient client){
+		return new KeeperMutexLock(name, client);
+	}
 
 	@Override
-	public void lock() {
+	public void lock() throws InterruptedException {
+		if (lockCount.get() != null && lockCount.get() > 0){
+			lockCount.set(lockCount.get()+1);
+			return ;
+		}
 		Semaphore semaphoreCurrentThread = new Semaphore(0);
-		String returnPath = client.create(lockPath+"/", "".getBytes(), CreateMode.EPHEMERAL_SEQUENTIAL);
-		String[] array = returnPath.split("/");
-		currentNodePath.set(returnPath);
-		waitThreadMap.put(array[array.length-1], semaphoreCurrentThread);
+		innerLock.lock();
+		try{
+			String returnPath = client.create(lockPath+"/", "".getBytes(), CreateMode.EPHEMERAL_SEQUENTIAL);
+			String[] array = returnPath.split("/");
+			currentNodePath.set(returnPath);
+			waitThreadMap.put(array[array.length-1], semaphoreCurrentThread);
+		}finally {
+			innerLock.unlock();
+		}
 		try {
-			semaphoreCurrentThread.acquire();;
+			semaphoreCurrentThread.acquire();
+			lockCount.set(1);
 		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
+			client.delete(currentNodePath.get());
+			throw e;
 		}
 	}
 	
@@ -75,7 +103,7 @@ public class KeeperMutexLock implements KeeperLock {
 	@Override
 	public boolean tryLock() {
 		try {
-			return tryLock(1, TimeUnit.MILLISECONDS);
+			return tryLock(0, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
 			return false;
 		}
@@ -83,28 +111,52 @@ public class KeeperMutexLock implements KeeperLock {
 
 	@Override
 	public boolean tryLock(long time, TimeUnit unit) throws InterruptedException {
+		if (lockCount.get() != null && lockCount.get() > 0){
+			lockCount.set(lockCount.get()+1);
+			return true;
+		}
 		Semaphore semaphoreCurrentThread = new Semaphore(0);
-		String returnPath = client.create(lockPath+"/", "".getBytes(), CreateMode.EPHEMERAL_SEQUENTIAL);
-		String[] array = returnPath.split("/");
-		currentNodePath.set(returnPath);
-		waitThreadMap.put(array[array.length-1], semaphoreCurrentThread);
+		innerLock.lock();
+		try{
+			String returnPath = client.create(lockPath+"/", "".getBytes(), CreateMode.EPHEMERAL_SEQUENTIAL);
+			String[] array = returnPath.split("/");
+			currentNodePath.set(returnPath);
+			waitThreadMap.put(array[array.length-1], semaphoreCurrentThread);
+		}finally{
+			innerLock.unlock();
+		}
 		boolean isLocked = false ;
 		if (time > 0){
-			isLocked = semaphoreCurrentThread.tryAcquire(1, time, unit);
+			try{
+				isLocked = semaphoreCurrentThread.tryAcquire(1, time, unit);
+			}catch(InterruptedException e){
+				client.delete(currentNodePath.get());
+				throw e ;
+			}
 			
 		}else {
-			isLocked = tryLock();
+			isLocked = semaphoreCurrentThread.tryAcquire();
 		}
 		if (!isLocked){
 			client.delete(currentNodePath.get());
+		}else {
+			lockCount.set(1);
 		}
 		return isLocked ;
 	}
 
 	@Override
 	public void unlock() {
-		client.delete(currentNodePath.get());
-		
+		if (lockCount.get() != null ){
+			if (lockCount.get() > 1){
+				lockCount.set(lockCount.get()-1);
+			}else if (lockCount.get() == 1) {
+				lockCount.set(null);
+				client.delete(currentNodePath.get());
+			}
+			return;
+		}
+		throw new IllegalMonitorStateException();
 	}
 
 	@Override
@@ -123,26 +175,30 @@ public class KeeperMutexLock implements KeeperLock {
 
 		@Override
 		public void onChild(String parent, List<String> subs) {
-			for (Entry<String, Semaphore> entry : waitThreadMap.entrySet()){
-				if (subs.contains(entry.getKey())){
-					Collections.sort(subs,new Comparator<String>() {
-						@Override
-						public int compare(String o1, String o2) {
-							return Integer.parseInt(o1) - Integer.parseInt(o2);
+			innerLocked();
+			try{
+				for (Entry<String, Semaphore> entry : waitThreadMap.entrySet()){
+					if (subs.contains(entry.getKey())){
+						Collections.sort(subs,new Comparator<String>() {
+							@Override
+							public int compare(String o1, String o2) {
+								return Integer.parseInt(o1) - Integer.parseInt(o2);
+							}
+						});
+						if (entry.getKey().equals(subs.get(0))){
+							entry.getValue().release();
+							waitThreadMap.remove(entry.getKey());
 						}
-					});
-					if (entry.getKey().equals(subs.get(0))){
-						entry.getValue().release();
 					}
 				}
-				
+			}
+			finally{
+				innerUnlocked();
 			}
 		}
 
 		@Override
 		public void onParentDelete(String path) {
-			// TODO Auto-generated method stub
-			
 		}
 	}
 }

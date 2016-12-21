@@ -10,6 +10,8 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException.NoNodeException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.keeper.client.exception.KeeperException;
 import com.keeper.client.listener.KeeperChildListener;
@@ -22,7 +24,7 @@ import com.keeper.client.listener.KeeperStateListener;
  * @version 0.0.1
  */
 public class KeeperClient implements IKeeperClient {
-
+	Logger logger = LoggerFactory.getLogger(KeeperClient.class);
 	private ZooKeeper zk;
 
 	private KeeperWatcher watcher;
@@ -146,10 +148,11 @@ public class KeeperClient implements IKeeperClient {
 				if (zk != null) {
 					zk.close();
 				}
-				throw new KeeperException(
-						String.format(
-								"[TIMEOUT] unable to connect to ZK %d within %d milliseconds ",
-								connectString, connectTimeout));
+				String msg = String.format(
+						"[TIMEOUT] unable to connect to ZK %d within %d milliseconds ",
+						connectString, connectTimeout);
+				logger.error(msg);
+				throw new KeeperException(msg);
 			}
 			connected.set(true);
 		} catch (Exception e) {
