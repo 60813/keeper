@@ -23,7 +23,7 @@
 
 ## MAVEN-DEPENDENCY
     <dependency>
-        <groupId>com.60813</groupId>
+        <groupId>com.keeper</groupId>
 	      <artifactId>keeper</artifactId>
 	      <version>0.0.1-SNAPSHOT</version>
     </dependency>
