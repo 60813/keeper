@@ -60,10 +60,10 @@
 	//getSortedChildren 传入指定比较器
 	List<String> getSortedChildren(String parent,Comparator<String> comparator);
 	
-	//监听数据变化，增，删；传入指定listener,当变化发生时事件回调	
+	//监听数据变化，删；传入指定listener,当变化发生时事件回调	
 	void listenNode(String path,KeeperNodeListener keeperNodeListener);
 	
-	//监听子节点增删以及本节点增删；传入指定listener,当变化发生时事件回调
+	//监听子节点增删以及本节点删除；传入指定listener,当变化发生时事件回调
 	void listenChild(String path,KeeperChildListener keeperChildListener);
 	
 	//构造分布式锁（互斥可重入），name是锁名称		
