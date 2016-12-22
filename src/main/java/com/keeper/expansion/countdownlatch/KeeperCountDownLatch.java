@@ -13,7 +13,6 @@ import com.keeper.client.exception.KeeperException;
 import com.keeper.client.listener.KeeperNodeListener;
 import com.keeper.expansion.locks.KeeperLock;
 import com.keeper.expansion.locks.KeeperMutexLock;
-import com.keeper.expansion.semaphore.SemaphoreException;
 
 /**
  * @author huangdou
@@ -39,7 +38,7 @@ public class KeeperCountDownLatch {
 	}
 
 	public static KeeperCountDownLatch getOrCreate(String name,
-			int createCount, KeeperClient client) throws SemaphoreException {
+			int createCount, KeeperClient client){
 		if (name == null || "".equals(name.trim()) || name.contains("/")) {
 			throw new IllegalArgumentException(String.format(
 					"name can not be %s", name));
@@ -158,7 +157,7 @@ public class KeeperCountDownLatch {
 		try {
 			int count = Integer.parseInt(new String(client.read(latchPath)));
 			if (count > 0) {
-				client.update(latchPath, ((count--) + "").getBytes());
+				client.update(latchPath, ((--count) + "").getBytes());
 			}
 		} catch (KeeperException e) {
 			if (!(e.getProto() instanceof NoNodeException)) {
