@@ -10,7 +10,7 @@
 		* [CLIENT-LISTEN](#client-listen)
 		* [MutexLock](#mutexlock)
 		* [Semaphore](#semaphore)
-		* [COUNTDOWNLATCH](#countdownlatch)
+		* [CountDownLatch](#countdownlatch)
 	* [CONTRIBUTOR](#contributor)
 			
 
