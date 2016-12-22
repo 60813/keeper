@@ -10,6 +10,7 @@
 		* [CLIENT-LISTEN](#client-listen)
 		* [MutexLock](#mutexlock)
 		* [Semaphore](#semaphore)
+		* [COUNTDOWNLATCH](#countdownlatch)
 	* [CONTRIBUTOR](#contributor)
 			
 
@@ -79,6 +80,15 @@
 	semaphore.acquire();
 	//返还许可，若不主动返还，则本许可将一直被该线程占用，直到client离线
 	semaphore.release();
+	
+	//构造分布式latch，name是名称，count为需要创建的count数值，注意如果该name标识的latch已经存在的话，则不会重新创建，使用已有count
+	KeeperCountDownLatch latch = KeeperCountDownLatch.getOrCreate("latch02", 2, client) ;
+	//等待count变为0
+	latch.await();
+	//count -1变为0后继续countDown将无实际变化
+	latch.countDown();
+	//销毁latch,销毁后其他阻塞的线程将不再阻塞,后续继续对latch执行await,countdown等操作将抛出异常。
+	latch.destroy();
 ```	
 	
 ## DEMO
@@ -257,7 +267,67 @@
 			}
 		}
 	} 
-```		
+```	
+
+### CountDownLatch
+```Java
+	@Test
+	public void testLock() throws InterruptedException, SemaphoreException {
+		KeeperCountDownLatch latch = KeeperCountDownLatch.getOrCreate("latch02", 2, client) ;
+		//一直等到countdown到0的线程1
+		MyThread t1 = new MyThread(latch, "waitCountDownThread1", true);
+		//指定较长时间，时间未到而countdown变为0，最终返回true的线程
+		MyThread t2 = new MyThread(latch, "waitTimeDownThreadTrue", false);
+		t2.setWaitMilliseconds(10000);
+		//指定较短时间，时间到而countdown未变为0，最终返回false的线程
+		MyThread t3 = new MyThread(latch, "waitTimeDownThreadFalse", false);
+		t3.setWaitMilliseconds(3000);
+		//一直等到countdown到0的线程2
+		MyThread t4 = new MyThread(latch, "waitCountDownThread2", true);
+		
+		t1.start();t2.start();t3.start();t4.start();
+		Thread.sleep(5000);
+		latch.countDown();
+		System.out.println("count down 1");
+		latch.countDown();
+		System.out.println("count down 2");
+		Thread.sleep(5000l);
+	}
+	
+	class MyThread extends Thread{
+		private KeeperCountDownLatch keeperCountDownLatch ;		
+		boolean waitUtilCountDown ;		
+		private int waitMilliseconds ;
+		
+		public void setWaitMilliseconds(int waitMilliseconds) {
+			this.waitMilliseconds = waitMilliseconds;
+		}
+
+		public MyThread(KeeperCountDownLatch keeperCountDownLatch,String name,boolean waitUtilCountDown) {
+			this.keeperCountDownLatch = keeperCountDownLatch;
+			this.waitUtilCountDown = waitUtilCountDown ;
+			this.setName(name);
+		}
+
+		@Override
+		public void run() {
+			try {
+				if (waitUtilCountDown){
+					keeperCountDownLatch.await();
+					System.out.println(Thread.currentThread().getName() + " return util countdown " + new Date().toLocaleString());
+				}else {
+					if (!keeperCountDownLatch.await(waitMilliseconds,TimeUnit.MILLISECONDS)){
+						System.out.println(Thread.currentThread().getName() + " returnd false util the specified waiting time elapses at " + new Date().toLocaleString());
+					}else {
+						System.out.println(Thread.currentThread().getName() + " returnd true util countdown " + new Date().toLocaleString());
+					}
+				}
+				
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+		}
+```
 
 ## CONTRIBUTOR
 * huangdou
