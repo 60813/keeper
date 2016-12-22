@@ -72,11 +72,15 @@ public class TestLatch {
 	@Test
 	public void testLock() throws InterruptedException, SemaphoreException {
 		KeeperCountDownLatch latch = KeeperCountDownLatch.getOrCreate("latch02", 2, client) ;
+		//一直等到countdown到0的线程1
 		MyThread t1 = new MyThread(latch, "waitCountDownThread1", true);
+		//指定较长时间，时间未到而countdown变为0，最终返回true的线程
 		MyThread t2 = new MyThread(latch, "waitTimeDownThreadTrue", false);
 		t2.setWaitMilliseconds(10000);
+		//指定较短时间，时间到而countdown未变为0，最终返回false的线程
 		MyThread t3 = new MyThread(latch, "waitTimeDownThreadFalse", false);
 		t3.setWaitMilliseconds(3000);
+		//一直等到countdown到0的线程2
 		MyThread t4 = new MyThread(latch, "waitCountDownThread2", true);
 		
 		t1.start();t2.start();t3.start();t4.start();
