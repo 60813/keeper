@@ -83,7 +83,6 @@ public class KeeperSimpleSemaphore implements KeeperSemaphore {
 	}
 	
 	private KeeperSimpleSemaphore(String name,KeeperClient client,int permits) {
-		super();
 		this.name = name;
 		this.client = client;
 		init(permits);
@@ -138,7 +137,7 @@ public class KeeperSimpleSemaphore implements KeeperSemaphore {
 			latchCurrentThread.await();
 		} catch (InterruptedException e) {
 			clearNodePath(-1);
-			throw new RuntimeException(e);
+			throw e;
 		}
 	}
 	
@@ -224,7 +223,7 @@ public class KeeperSimpleSemaphore implements KeeperSemaphore {
 				isLocked = latchCurrentThread.await(timeout, unit);
 			}catch(InterruptedException e){
 				clearNodePath(-1);
-				return false;
+				throw e;
 			}
 		}else {
 			long count = latchCurrentThread.getCount();
