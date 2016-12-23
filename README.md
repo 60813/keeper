@@ -22,12 +22,14 @@
 实现分布式锁(互斥锁)，分布式信号量(samephore),分布式闭锁(CountDownLatch)等
 
 ## MAVEN-DEPENDENCY
+```Java
     <dependency>
         <groupId>com.keeper</groupId>
 	      <artifactId>keeper</artifactId>
 	      <version>0.0.1-SNAPSHOT</version>
     </dependency>
-    
+ ```
+ 
 ## USAGE
 ```Java
 	//构造
