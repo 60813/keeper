@@ -1,15 +1,15 @@
 package com.keeper.client;
 
+import java.util.Date;
 import java.util.List;
 
+import org.apache.zookeeper.CreateMode;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import com.keeper.client.KeeperClient;
 
 /**
  *@author huangdou
@@ -56,6 +56,32 @@ public class TestClientCRUD {
 	public void testCreate(){
 		client.create(testPath, testData.getBytes());
 		Assert.assertTrue(testData .equals( new String(client.read(testPath))));
+	}
+	
+	@Test
+	public void testCreateStr(){
+		String str = "hello World! \\n ****";
+		client.createStr(testPath, str,CreateMode.PERSISTENT);
+		Assert.assertTrue(str .equals(client.readStr(testPath)));
+	}
+	
+	@Test
+	public void testCreateObject(){
+		Person person = new Person();
+		person.setAge(20);
+		person.setJoinDate(new Date());
+		person.setJoinTheTeam(true);
+		person.setJoinTime(System.currentTimeMillis());
+		person.setName("张三");
+		client.createObject(testPath, person,CreateMode.PERSISTENT);
+		Person p = client.readObject(testPath, Person.class);
+		System.out.println(p);
+		Assert.assertTrue(person.getName().equals(p.getName()));
+		Assert.assertTrue(person.getAge()==p.getAge());
+		Assert.assertTrue(person.getJoinDate().getTime()==p.getJoinDate().getTime());
+		Assert.assertTrue(person.getJoinTime()==p.getJoinTime());
+		Assert.assertTrue(p.isJoinTheTeam());
+		
 	}
 	
 	@Test

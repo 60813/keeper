@@ -17,6 +17,9 @@ import com.keeper.client.exception.KeeperException;
 import com.keeper.client.listener.KeeperChildListener;
 import com.keeper.client.listener.KeeperNodeListener;
 import com.keeper.client.listener.KeeperStateListener;
+import com.keeper.core.ObjectSerializer;
+import com.keeper.core.StringSerializer;
+import com.keeper.core.Utils;
 
 /**
  * @author huangdou
@@ -190,6 +193,19 @@ public class KeeperClient implements IKeeperClient {
 			throw new KeeperException(e);
 		}
 	}
+	
+	@Override
+	public String createStr(String path, String data, CreateMode createMode) {
+		byte [] bytes = StringSerializer.getStringSerializer().serialize(data);
+		return create(path, bytes, createMode);
+	}
+	
+	@Override
+	public String createObject(String path, Object t, CreateMode createMode) {
+		ObjectSerializer<Object> os = Utils.getObject(OBJECT_SERIALIZER_CLASS);
+		byte[] bytes = os.serialize(t);
+		return create(path, bytes, createMode);
+	}
 
 	public String createWtihParent(String path) {
 		try {
@@ -214,6 +230,19 @@ public class KeeperClient implements IKeeperClient {
 	public byte[] read(String path) {
 		return read(path, false);
 	}
+	
+	@Override
+	public String readStr(String path) {
+		byte [] bytes = read(path, false);
+		return StringSerializer.getStringSerializer().deserialize(bytes, null);
+	}
+	
+	@Override
+	public <T> T readObject(String path, Class<T> clazz) {
+		ObjectSerializer<T> os = Utils.getObject(OBJECT_SERIALIZER_CLASS);
+		byte[] bytes = read(path);
+		return os.deserialize(bytes, clazz);
+	}
 
 	public byte[] read(String path, boolean watch) {
 		try {
@@ -229,6 +258,19 @@ public class KeeperClient implements IKeeperClient {
 		} catch (Exception e) {
 			throw new KeeperException(e);
 		}
+	}
+	
+	@Override
+	public void updateObject(String path, Object data) {
+		ObjectSerializer<Object> os = Utils.getObject(OBJECT_SERIALIZER_CLASS);
+		byte[] bytes = os.serialize(data);
+		update(path, bytes);
+	}
+	
+	@Override
+	public void updateStr(String path, String data) {
+		byte [] bytes = StringSerializer.getStringSerializer().serialize(data);
+		update(path, bytes);
 	}
 
 	public boolean delete(String path) {
@@ -291,5 +333,6 @@ public class KeeperClient implements IKeeperClient {
 		throw new KeeperException("not supported!");
 //		watcher.registKeeperStateListener(keeperStateListener);
 	}
-
+	
+	
 }

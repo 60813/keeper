@@ -24,11 +24,17 @@ public interface IKeeperClient {
 	
 	int DEFAULT_CONCURRENT_PROCESS = 3;
 	
+	final String OBJECT_SERIALIZER_CLASS = "com.keeper.core.ObjectSerializer";
+	
 	boolean exist(String path);
 	
 	String create(String path,byte[] bytes);
 	
 	String create(String path, byte[] bytes,CreateMode createMode);
+	
+	String createStr(String path,String data,CreateMode createMode);
+	
+	String createObject(String path,Object t,CreateMode createMode);
 	
 	String createWtihParent(String path);
 	
@@ -36,7 +42,15 @@ public interface IKeeperClient {
 	
 	byte[] read(String path);
 	
+	String readStr(String path);
+	
+	<T> T readObject(String path,Class<T> clazz);
+	
 	void update(String path,byte[] bytes);
+	
+	void updateStr(String path,String data);
+	
+	void updateObject(String path,Object data);
 	
 	boolean delete(String path);
 	
