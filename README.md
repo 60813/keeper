@@ -44,12 +44,24 @@
 	String create(String path, byte[] bytes,CreateMode createMode);
 	//create 自动创建父亲节点
 	String createWtihParent(String path);
+	//create 字符串数据
+	String createStr(String path,String data,CreateMode createMode);
+	//create 对象数据
+	String createObject(String path,Object t,CreateMode createMode);
 	
 	//read
 	byte[] read(String path);
+	//read 读取字符串数据
+	String readStr(String path);
+	//read 读取对象数据
+	<T> T readObject(String path,Class<T> clazz);
 	
 	//update
 	void update(String path,byte[] bytes);
+	//update 更新字符串数据
+	void updateStr(String path,String data);
+	//update 更新对象数据
+	void updateObject(String path,Object data);
 	
 	//delete	
 	boolean delete(String path);
@@ -107,6 +119,31 @@
       		client.create(testPath, testData.getBytes());
       		Assert.assertTrue(testData .equals( new String(client.read(testPath))));
     	}
+	
+	@Test
+	public void testCreateStr(){
+		String str = "hello World! \\n ****";
+		client.createStr(testPath, str,CreateMode.PERSISTENT);
+		Assert.assertTrue(str .equals(client.readStr(testPath)));
+	}
+	
+	@Test
+	public void testCreateObject(){
+		Person person = new Person();
+		person.setAge(20);
+		person.setJoinDate(new Date());
+		person.setJoinTheTeam(true);
+		person.setJoinTime(System.currentTimeMillis());
+		person.setName("张三");
+		client.createObject(testPath, person,CreateMode.PERSISTENT);
+		Person p = client.readObject(testPath, Person.class);
+		System.out.println(p);
+		Assert.assertTrue(person.getName().equals(p.getName()));
+		Assert.assertTrue(person.getAge()==p.getAge());
+		Assert.assertTrue(person.getJoinDate().getTime()==p.getJoinDate().getTime());
+		Assert.assertTrue(person.getJoinTime()==p.getJoinTime());
+		Assert.assertTrue(p.isJoinTheTeam());
+	}
 	
 	@Test
 	public void testRead(){
