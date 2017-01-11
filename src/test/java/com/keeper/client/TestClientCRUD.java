@@ -25,33 +25,33 @@ public class TestClientCRUD {
 	static String testData  = "hello world";
 	
 	
-//	@BeforeClass
-//	public static void createClient(){
-//		System.out.println("before");
-//		client = new KeeperClient("127.0.0.1:2181",100000);
-//	}
-//	
-//	@AfterClass
-//	public static void closeClient(){
-//		if (client != null){
-//			client.closeClient();
-//			client = null;
-//		}
-//	}
-//	
-//	@Before
-//	public void before(){
-//		if (client.exist(testPath)){
-//			client.deleteRecurse(testPath);
-//		}
-//	}
-//	
-//	@After
-//	public void after(){
-//		if (client.exist(testPath)){
-//			client.deleteRecurse(testPath);
-//		}
-//	}
+	@BeforeClass
+	public static void createClient(){
+		System.out.println("before");
+		client = new KeeperClient("127.0.0.1:2181",100000);
+	}
+	
+	@AfterClass
+	public static void closeClient(){
+		if (client != null){
+			client.closeClient();
+			client = null;
+		}
+	}
+	
+	@Before
+	public void before(){
+		if (client.exist(testPath)){
+			client.deleteRecurse(testPath);
+		}
+	}
+	
+	@After
+	public void after(){
+		if (client.exist(testPath)){
+			client.deleteRecurse(testPath);
+		}
+	}
 	
 	@Test
 	public void testCreate(){
