@@ -75,7 +75,7 @@ public class KeeperClient implements IKeeperClient {
 		this(connectString, sessionTimeout, connectTimeout,
 				DEFAULT_CONCURRENT_PROCESS);
 	}
-
+	
 	public KeeperClient(String connectString, int sessionTimeout,
 			int connectTimeout, int concurrentProcessNum) {
 		this.sessionTimeout = sessionTimeout;
@@ -91,11 +91,11 @@ public class KeeperClient implements IKeeperClient {
 	}
 
 	public KeeperClient(String connectString) {
-		this(connectString, DEFAULT_SESSION_TIMEOUT);
+		this(connectString, DEFAULT_SESSION_TIMEOUT,DEFAULT_CONNECT_TIMEOUT);
 	}
 
-	public KeeperClient(String connectString, int sessionTimeout) {
-		this(connectString, sessionTimeout, DEFAULT_CONNECT_TIMEOUT);
+	public KeeperClient(String connectString, int connectTimeout) {
+		this(connectString, DEFAULT_SESSION_TIMEOUT, connectTimeout);
 	}
 
 	public synchronized void reconnect() {

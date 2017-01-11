@@ -10,6 +10,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.manipulation.Sortable;
 
 /**
  *@author huangdou
@@ -24,36 +25,38 @@ public class TestClientCRUD {
 	static String testData  = "hello world";
 	
 	
-	@BeforeClass
-	public static void createClient(){
-		System.out.println("before");
-		client = new KeeperClient("127.0.0.1:2181");
-	}
-	
-	@AfterClass
-	public static void closeClient(){
-		if (client != null){
-			client.closeClient();
-			client = null;
-		}
-	}
-	
-	@Before
-	public void before(){
-		if (client.exist(testPath)){
-			client.deleteRecurse(testPath);
-		}
-	}
-	
-	@After
-	public void after(){
-		if (client.exist(testPath)){
-			client.deleteRecurse(testPath);
-		}
-	}
+//	@BeforeClass
+//	public static void createClient(){
+//		System.out.println("before");
+//		client = new KeeperClient("127.0.0.1:2181",100000);
+//	}
+//	
+//	@AfterClass
+//	public static void closeClient(){
+//		if (client != null){
+//			client.closeClient();
+//			client = null;
+//		}
+//	}
+//	
+//	@Before
+//	public void before(){
+//		if (client.exist(testPath)){
+//			client.deleteRecurse(testPath);
+//		}
+//	}
+//	
+//	@After
+//	public void after(){
+//		if (client.exist(testPath)){
+//			client.deleteRecurse(testPath);
+//		}
+//	}
 	
 	@Test
 	public void testCreate(){
+		KeeperClient client;
+		client = new KeeperClient("127.0.0.1:2181",100000);
 		client.create(testPath, testData.getBytes());
 		Assert.assertTrue(testData .equals( new String(client.read(testPath))));
 	}
@@ -110,5 +113,24 @@ public class TestClientCRUD {
 		client.delete(testPath);
 		Assert.assertTrue(!client.exist(testPath));
 	}
+	
+	 private static int[] sort(int[] array){
+        for(int i = 0; i < array.length; i++){
+            for (int j = i+1; j< array.length; j++){
+                if(array[i] < array[j]){
+                    int temp = array[i];
+                    array[i] = array[j];
+                    array[j] = temp;
+                }
+            }
+        }
+        return array;
+    }
+	 
+	 private static void sysout(int[] array){
+		 for (int i =0;i<array.length;i++){
+			 System.out.println(array[i]);
+		 }
+	 }
 	
 }
