@@ -13,6 +13,7 @@ import org.junit.Test;
 import com.keeper.client.KeeperClient;
 import com.keeper.client.listener.KeeperChildListener;
 import com.keeper.client.listener.KeeperNodeListener;
+import com.keeper.server.KeeperSimpleServer;
 
 /**
  *@author huangdou
@@ -24,12 +25,13 @@ public class TestClientListen {
 	static KeeperClient client ;
 	
 	static String testPath =  "/test1";
-	static String testData  = "hello world";
+	static String testData  = "hello world"; 
 	
 	
 	@BeforeClass
-	public static void createClient(){
-		
+	public static void createServer(){
+		KeeperSimpleServer server = new KeeperSimpleServer("d:\\zktmp\\snap", "d:\\zktmp\\datalog");
+		server.startZkServer();
 	}
 	
 	@AfterClass
@@ -39,7 +41,7 @@ public class TestClientListen {
 	
 	@Before
 	public void before(){
-		client = new KeeperClient("127.0.0.1:2183");
+		client = new KeeperClient("127.0.0.1:2181");
 	}
 	
 	@After

@@ -5,7 +5,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import com.keeper.client.KeeperClient;
 import com.keeper.expansion.countdownlatch.KeeperCountDownLatch;
@@ -69,7 +68,7 @@ public class TestLatch {
 		
 	}
 	
-	@Test
+//	@Test
 	public void testLock() throws InterruptedException, SemaphoreException {
 		KeeperCountDownLatch latch = KeeperCountDownLatch.getOrCreate("latch02", 2, client) ;
 		//一直等到countdown到0的线程1

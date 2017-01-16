@@ -4,7 +4,6 @@ import java.util.Random;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import com.keeper.client.KeeperClient;
 import com.keeper.expansion.semaphore.KeeperSemaphore;
@@ -32,7 +31,7 @@ public class TestClientSemaphore {
 		}
 	}
 	
-	@Test
+//	@Test
 	public void testSemaphore() throws SemaphoreException, InterruptedException{
 		KeeperSemaphore semaphore = KeeperSimpleSemaphore.getOrCreate("semaphore2", 3, client);
 		for (int i=1;i<=16;i++){

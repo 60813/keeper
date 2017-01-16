@@ -10,7 +10,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.manipulation.Sortable;
+
+import com.keeper.server.KeeperSimpleServer;
 
 /**
  *@author huangdou
@@ -28,6 +29,8 @@ public class TestClientCRUD {
 	@BeforeClass
 	public static void createClient(){
 		System.out.println("before");
+		KeeperSimpleServer server = new KeeperSimpleServer("d:\\zktmp\\snap", "d:\\zktmp\\datalog");
+		server.startZkServer();
 		client = new KeeperClient("127.0.0.1:2181",100000);
 	}
 	
@@ -113,24 +116,4 @@ public class TestClientCRUD {
 		client.delete(testPath);
 		Assert.assertTrue(!client.exist(testPath));
 	}
-	
-	 private static int[] sort(int[] array){
-        for(int i = 0; i < array.length; i++){
-            for (int j = i+1; j< array.length; j++){
-                if(array[i] < array[j]){
-                    int temp = array[i];
-                    array[i] = array[j];
-                    array[j] = temp;
-                }
-            }
-        }
-        return array;
-    }
-	 
-	 private static void sysout(int[] array){
-		 for (int i =0;i<array.length;i++){
-			 System.out.println(array[i]);
-		 }
-	 }
-	
 }

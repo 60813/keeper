@@ -3,8 +3,6 @@ package com.keeper.expansion;
 import java.util.Date;
 import java.util.Random;
 
-import org.junit.Test;
-
 import com.keeper.client.KeeperClient;
 import com.keeper.expansion.semaphore.KeeperSemaphore;
 import com.keeper.expansion.semaphore.KeeperSimpleSemaphore;
@@ -18,7 +16,7 @@ import com.keeper.expansion.semaphore.SemaphoreException;
 public class MultiMachinesSemaphore {
 
 	final String path = "/semaphoreTest02";
-	@Test
+//	@Test
 	public void machine1() throws SemaphoreException, InterruptedException{
 		KeeperClient client = new KeeperClient("127.0.0.1:2181");
 		KeeperSemaphore semaphore = KeeperSimpleSemaphore.getOrCreate("testSemaphore11", 3, client);
@@ -32,7 +30,7 @@ public class MultiMachinesSemaphore {
 		Thread.sleep(100000);
 	}
 	
-	@Test
+//	@Test
 	public void machine2() throws SemaphoreException, InterruptedException{
 		KeeperClient client = new KeeperClient("127.0.0.1:2181");
 		KeeperSemaphore semaphore = KeeperSimpleSemaphore.getOrCreate("testSemaphore11", 3, client);
@@ -43,7 +41,7 @@ public class MultiMachinesSemaphore {
 		Thread.sleep(100000);
 	}
 	
-	@Test
+//	@Test
 	public void machine3() throws SemaphoreException, InterruptedException{
 		KeeperClient client = new KeeperClient("127.0.0.1:2181");
 		KeeperSemaphore semaphore = KeeperSimpleSemaphore.getOrCreate("testSemaphore11", 3, client);

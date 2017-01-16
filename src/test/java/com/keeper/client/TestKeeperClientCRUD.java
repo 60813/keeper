@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import com.keeper.client.KeeperClient;
 import com.keeper.client.exception.KeeperException;
+import com.keeper.server.KeeperSimpleServer;
 
 /**
  *@author huangdou
@@ -20,9 +21,13 @@ import com.keeper.client.exception.KeeperException;
 public class TestKeeperClientCRUD {
 	
 	KeeperClient client ;
+	
+	KeeperSimpleServer server ;
 	@Before
 	public void beforeTest(){
-		client = new KeeperClient("127.0.0.1:2183");
+		server = new KeeperSimpleServer("snap", "datalog");
+		server.startZkServer();
+		client = new KeeperClient("127.0.0.1:2181");
 	}
 	@After
 	public void afterTest(){
@@ -30,12 +35,17 @@ public class TestKeeperClientCRUD {
 			client.closeClient();
 			client = null;
 		}
+		if (server!=null){
+			server.shutdown();
+		}
 	}
 
 	@Test
 	public void testExist() {
 		String path = "/test1";
-		Assert.assertFalse(client.exist(path));
+		if (client.exist(path)){
+			client.delete(path);
+		}
 		client.create(path, "".getBytes());
 		Assert.assertTrue(client.exist(path));
 		client.delete(path);
@@ -94,7 +104,7 @@ public class TestKeeperClientCRUD {
 		client.update(path1, updates.getBytes());
 		
 		byte[] bytes = client.read(path1);
-		Assert.assertEquals(new String(bytes), data);
+		Assert.assertEquals(new String(bytes), updates);
 	}
 	
 
