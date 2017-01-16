@@ -1,4 +1,5 @@
 # KEEPER
+[![Build Status](https://travis-ci.org/60813/keeper.svg?branch=master)](https://travis-ci.org/60813/keeper)
 基于[zookeeper](http://zookeeper.apache.org)实现的分布式开发客户端
 
 * [KEEPER](#keeper)
