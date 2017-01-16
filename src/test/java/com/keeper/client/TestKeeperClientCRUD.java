@@ -25,7 +25,7 @@ public class TestKeeperClientCRUD {
 	KeeperSimpleServer server ;
 	@Before
 	public void beforeTest(){
-		server = new KeeperSimpleServer("snap", "datalog");
+		server = new KeeperSimpleServer("d:\\zktmp\\snap", "d:\\zktmp\\datalog");
 		server.startZkServer();
 		client = new KeeperClient("127.0.0.1:2181");
 	}
