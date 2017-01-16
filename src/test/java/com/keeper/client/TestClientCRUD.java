@@ -25,11 +25,11 @@ public class TestClientCRUD {
 	static String testPath =  "/test1";
 	static String testData  = "hello world";
 	
-	
-	@BeforeClass
+	static KeeperSimpleServer server ;
+	@BeforeClass 
 	public static void createClient(){
 		System.out.println("before");
-		KeeperSimpleServer server = new KeeperSimpleServer("d:\\zktmp\\snap", "d:\\zktmp\\datalog");
+		server = new KeeperSimpleServer("d:\\zktmp\\snap", "d:\\zktmp\\datalog");
 		server.startZkServer();
 		client = new KeeperClient("127.0.0.1:2181",100000);
 	}
@@ -39,6 +39,9 @@ public class TestClientCRUD {
 		if (client != null){
 			client.closeClient();
 			client = null;
+		}
+		if (server!=null){
+			server.shutdown();
 		}
 	}
 	

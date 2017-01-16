@@ -27,16 +27,18 @@ public class TestClientListen {
 	static String testPath =  "/test1";
 	static String testData  = "hello world"; 
 	
-	
+	static KeeperSimpleServer server ;
 	@BeforeClass
 	public static void createServer(){
-		KeeperSimpleServer server = new KeeperSimpleServer("d:\\zktmp\\snap", "d:\\zktmp\\datalog");
+		server = new KeeperSimpleServer("d:\\zktmp\\snap", "d:\\zktmp\\datalog");
 		server.startZkServer();
 	}
 	
 	@AfterClass
 	public static void closeClient(){
-		
+		if (server!=null){
+			server.shutdown();
+		}
 	}
 	
 	@Before
