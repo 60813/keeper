@@ -153,7 +153,7 @@ public class KeeperClient implements IKeeperClient {
 				}
 				String msg = String.format(
 						"[TIMEOUT] unable to connect to ZK %d within %d milliseconds ",
-						connectString, connectTimeout);
+						connectString, connectTimeout+"");
 				logger.error(msg);
 				throw new KeeperException(msg);
 			}
