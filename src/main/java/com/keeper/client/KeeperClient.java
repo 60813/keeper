@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException.NoNodeException;
+import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
@@ -330,10 +331,8 @@ public class KeeperClient implements IKeeperClient {
 		watcher.registKeeperChildListener(path, keeperChildListener);
 	}
 
-	public void listenState(KeeperStateListener keeperStateListener) {
-		throw new KeeperException("not supported!");
-//		watcher.registKeeperStateListener(keeperStateListener);
+	public void listenState(Watcher.Event.KeeperState keeperState,KeeperStateListener keeperStateListener) {
+//		throw new KeeperException("not supported!");
+		watcher.registKeeperStateListener(keeperState.getIntValue(),keeperStateListener);
 	}
-	
-	
 }

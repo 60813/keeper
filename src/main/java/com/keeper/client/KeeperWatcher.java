@@ -30,10 +30,11 @@ public class KeeperWatcher implements Watcher{
 	
 	private EventConsumerPool pool ;
 	
-	private CopyOnWriteArraySet<KeeperStateListener> keeperStateListeners = new CopyOnWriteArraySet<KeeperStateListener>();
+//	private CopyOnWriteArraySet<KeeperStateListener> keeperStateListeners = new CopyOnWriteArraySet<KeeperStateListener>();
 	private ConcurrentHashMap<String,Set<KeeperNodeListener>> keeperNodeListeners = new ConcurrentHashMap<String,Set<KeeperNodeListener>>();
 	private ConcurrentHashMap<String,Set<KeeperChildListener>> keeperChildListeners = new ConcurrentHashMap<String,Set<KeeperChildListener>>();
-
+	private ConcurrentHashMap<Integer, Set<KeeperStateListener>> keeperStateListeners = new ConcurrentHashMap<Integer,Set<KeeperStateListener>>();
+	
 	private Lock eventLock = new ReentrantLock();
 	private Condition condition = eventLock.newCondition();
 	public Lock getEventLock(){
@@ -59,11 +60,17 @@ public class KeeperWatcher implements Watcher{
 		Set<KeeperNodeListener> ls2 = getNodeListeners(path);
 		return (ls1!=null&&!ls1.isEmpty()) || (ls2!=null&&!ls2.isEmpty());
 	}
-	public CopyOnWriteArraySet<KeeperStateListener> registKeeperStateListener(KeeperStateListener keeperStateListener){
+	public synchronized Set<KeeperStateListener> registKeeperStateListener(Integer stateCode ,KeeperStateListener keeperStateListener){
+		Set<KeeperStateListener> tempSet ;
 		synchronized (keeperStateListeners) {
-			keeperStateListeners.add(keeperStateListener);
+			tempSet = keeperStateListeners.get(stateCode);
+			if (tempSet == null){
+				tempSet = new CopyOnWriteArraySet<KeeperStateListener>();
+				keeperStateListeners.put(stateCode, tempSet);
+			}
+			tempSet.add(keeperStateListener);
 		}
-		return keeperStateListeners;
+		return tempSet;
 	}
 	
 	public synchronized Set<KeeperNodeListener> registKeeperNodeListener(String path ,KeeperNodeListener keeperNodeListener){
@@ -132,7 +139,16 @@ public class KeeperWatcher implements Watcher{
 		client.exist(path,true);
 		client.getChildren(path);
 	}
-	
+	public void fireStateListener(Watcher.Event.KeeperState state){
+		Set<KeeperStateListener> listeners = keeperStateListeners.get(state.getIntValue());
+		if (listeners == null || listeners.isEmpty()){
+			return ;
+		}
+		
+		for (KeeperStateListener listener : listeners){
+			listener.onEvent(state);
+		}
+	}
 	
 	public void fireNodeListener(String path){
 		Set<KeeperNodeListener> listeners = keeperNodeListeners.get(path);
@@ -173,13 +189,18 @@ public class KeeperWatcher implements Watcher{
 			}else {
 				switch (event.getState()) {
 				case SyncConnected:
+					fireStateListener(event.getState());
 					client.connected();
 					getCondition().signalAll();
 					break;
 				case Expired :
+					fireStateListener(event.getState());
 					client.reconnect();
 					fireAllNodeListener();
 					fireAllChildListener();
+					break;
+				case Disconnected :
+					fireStateListener(event.getState());
 					break;
 				default:
 					break;

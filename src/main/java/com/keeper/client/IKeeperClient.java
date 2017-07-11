@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.Watcher;
 
 import com.keeper.client.listener.KeeperChildListener;
 import com.keeper.client.listener.KeeperNodeListener;
@@ -66,7 +67,7 @@ public interface IKeeperClient {
 	
 	void listenChild(String path,KeeperChildListener keeperChildListener);
 	
-	void listenState(KeeperStateListener keeperStateListener);
+	void listenState(Watcher.Event.KeeperState keeperState,KeeperStateListener keeperStateListener);
 	
 	
 }

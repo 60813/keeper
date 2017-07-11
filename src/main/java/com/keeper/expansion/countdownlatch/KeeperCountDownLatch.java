@@ -18,6 +18,8 @@ import com.keeper.expansion.locks.KeeperMutexLock;
  * @author huangdou
  * @at 2016年12月5日上午10:28:39
  * @version 0.0.1
+ * 
+ * 同步锁，用于处理分布式多实例多线程之间的一致协作。
  */
 public class KeeperCountDownLatch {
 	public static final String LATCH_ROOT = "/latch_root";

@@ -1,6 +1,6 @@
 package com.keeper.client.listener;
 
-import com.keeper.client.event.KeeperStateEvent;
+import org.apache.zookeeper.Watcher;
 
 /**
  *@author huangdou
@@ -9,6 +9,6 @@ import com.keeper.client.event.KeeperStateEvent;
  */
 public interface KeeperStateListener {
 
-	public void onEvent(KeeperStateEvent event);
+	public void onEvent(Watcher.Event.KeeperState event);
 
 }
